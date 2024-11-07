@@ -1,0 +1,137 @@
+O QUE É NECESSÁRIO:
+- Nomear a pasta que ira usar como DASHBOARDpy
+
+- Nomear o arquivo como dashboard.py
+
+- Baixar:
+ - - VSCODE 
+// BAIXAR EXTENSÃO DE PYTHON
+// BAIXAR A EXTENSÃO DE LIVE SHARE
+
+ - - MySQL Workbench
+
+ - - Python 
+// DA PARA BAIXAR COM O CMD SÓ JOGAR python nele
+
+ - - Streamlit
+// INSTALADO PELO TERMINAL DO VSCODE [ pip3 install streamlit ]
+
+- - MySQL Connector
+// INSTALADO PELO TERMINAL DO VSCODE [ pip install mysql-connector-python ] Atraves do mesmo iremos importar o Error que servira como para o tratamento de erros especificos tendo haver com o banco de dados e os dados utilizados
+
+
+INFORMAÇÕES DO CÓDIGO:
+ - - IMPORTAÇÕES:
+import streamlit as st
+import pandas as pd
+import plotly.express as px
+import mysql.connector
+from mysql.connector import Error
+
+EXEMPLOS DO MySQL CONNECTOR:
+def create_connection():
+try:
+    connection = mysql.connector.connect(
+        host='localhost',
+        database='seu_banco_de_dados',
+        user='seu_usuario',
+        password='sua_senha'
+    )
+
+/*
+* Esse bloco define uma função onde o Try será utilizado para tentar executar a coneção com o banco de dados.
+* Caso ocorra um erro ele descerá diretamente para o tratamento do erro ( except Error ).
+*/
+
+if connection.is_connected():
+    print("Conectado ao MySQL")
+    return connection
+
+/*
+* O bloco acima serve para confirmar se realmente está conectado ao banco de dados, assim printando algo se estiver realmente conectado. ( Apenas uma dupla verificação ).
+*/
+
+except Error as error:
+    print(f"Erro ao conectar ao MySQL: {e}")
+    return None
+
+/*
+* Quando ocorre um erro, ele é capturado na variavel error, e é descrito na tela qual foi o erro que ocorreu.
+*/
+
+finally:
+    if connection.is_connected():
+        connection.close()
+
+/*
+* Este bloco é executado independentemente de uma exceção ter sido lançada ou não. Ele é utilizado para garantir que códigos de limpeza sejam usados. 
+*Mas em resumo a primeira linha verifica se a conexão ainda está ativa e a segunda fecha a mesma se estiver aberta para não liberar recursos afim de evitar possiveis vazamentos de conexões.
+*/
+
+def load_data(query):
+    connection = create_connection()
+    if connection:
+        df = pd.read_sql(query, connection)
+        connection.close()
+        return df
+
+/*
+* No bloco acima é definido uma função que possui um argumento como consulta, logo após chamando a função anterior paraestabelecer uma conexão.
+* O if serve para verificar se a coneção foi bem sucedida. Logo após é usado o metodo read_sql afim de ler o SQL atraves da consulta e assim conseguir carregar os resultados em um DataFrame só (df).
+* No fim a conexão é fechada para liberar os recursos, além de que a um retorno do DataFrame, contendo os resultados da busca.
+*/
+
+query = "SELECT * FROM sua_tabela"
+df = load_data(query)
+
+/*
+* Acima é demonstrado um exemplo de consulta que pode ser feita, o mesmo pode ser alterada através do codigo SQL entre as aspas duplas.
+*/
+
+ - - PARA RODAR O DASBOARD: streamlit run dashboard.py
+
+- - EXPLICAÇÕES:
+O st ( streamlit ) será utilizado para criar e modificar a pagina assim podendo modificar o layout da pagina atraves do mesmo. Aviso, o streamlit vai preenchendo a medida que consegue, ou seja, vai indo de cima pra baixo enquanto consegue.
+
+O df é o que criara os graficos junto com o pd ( pandas ), basicamente o df seria a visualização enquanto o pd seria o que irá puxar as informações junto do banco de dados para criar a visualização das tabelas e graficos.
+
+Possivelmente será necessário criar diversos tipos de tratamentos de dados.
+
+Será necessário criar diversos filtros pelo pd.
+
+O px ( plotly.express ) será o responsavel principal pelos graficos. Atraves dele é possivel escolher o x e o y de um grafico assim como também escolher qual tipo de grafico será utilizado.
+
+PODE OCORRER: 
+- - O pd entendera datas como objetos, então é preciso modificar a mesma atraves de codigos.
+
+CRIAR UM BANCO DE DADOS
+ - - Definir o tipo de separação utilizada no banco de dados
+
+ - - Definir o tipo de utilização de casas decimais como virgula
+
+
+REGRAS!!!
+ - - Todos precisam ter todas as extenções.
+
+ - - Todos tem que seguir uma mesma métrica para que não nos embaralhemos no códico.
+
+ - - Comente, comente em cada código que faz para que outros entendam o que ocorre ali, independente que seja 20 linhas de comentários, comente. PARA COMENTAR USE: // OU ENTÃO /* digite algo aqui */
+
+ - - Ao criar graficos, se deve criar sempre usando o seguinte padrão: fig_nome esse padrão ira nos ajudar a entender o que está figura é. Exemplo: "Quero um grafico do faturamento por dia, sendo filtrado pelo mes selecionado" exemplo codigo: fig_date
+
+ - - Para deixar vários gráficos na tela será necessário usar colunas, então quando criarem elas usem o seguinte metodo: Col1, Col2 st.columns(2) isso cria duas colunas uma do lado da outra, sendo possuivel adicionar dois graficos menores um do lado do outro, lembrando que o valor entre parentes muda de acordo com o número de colunas. E se existir na tela uma Col1 e uma Col2 siga essa metrica ja na Col3 e assim por diante.
+
+ - - Todos devem ter o mesmo banco de dados na própria maquina ou em qualquer maquina que for codar. EXTREMAMENTE IMPORTANTE.
+
+ - - Tudo será postado num github, que será disponibilizado no grupo.
+
+ - - Seguindo a regra a cima, todos devem saber como fazer git do VSCODE para o github. 
+
+ - - NÃO FAÇAM GIT DIRETAMENTE NA MAIN. Criem uma branch nova pra não cagar tudo e sempre deixe junto nela um comentário explicando o que adicionou. E assim que enviar favor avisar no grupo.
+
+ - - Reze antes de codar ou Chore de depressão ( opcional ).
+
+
+
+
+

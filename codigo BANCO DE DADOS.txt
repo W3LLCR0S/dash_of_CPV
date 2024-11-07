@@ -1,0 +1,259 @@
+CRIAÇÃO DE TRIGGERS PARA CALCULOS AUTOMATICOS:
+
+NOME DO BANCO DE DADOS dashboard_information
+
+CREATE DEFINER=`Vitor`@`%` TRIGGER `calc_dias_e_meses_contrato` BEFORE INSERT ON `clientes` FOR EACH ROW BEGIN
+    -- Calcula a diferença em dias entre a data de término e a data de início do contrato
+    SET NEW.dias_em_contrato = DATEDIFF(NEW.termino_contrato, NEW.inicio_contrato);
+    
+    -- Extrai o mês da data de início do contrato
+    SET NEW.mes_inicio_contrato = MONTH(NEW.inicio_contrato);
+    
+    -- Extrai o mês da data de término do contrato
+    SET NEW.mes_termino_contrato = MONTH(NEW.termino_contrato);
+    
+    -- Calcula a diferença em meses entre a data de término e a data de início
+    SET NEW.tempo_contrato_meses = PERIOD_DIFF(
+        EXTRACT(YEAR_MONTH FROM NEW.termino_contrato), 
+        EXTRACT(YEAR_MONTH FROM NEW.inicio_contrato)
+    );
+END
+
+CRIAÇÃO DO BANCO DE DADOS
+
+CREATE TABLE Clientes (
+    id_cliente INT PRIMARY KEY AUTO_INCREMENT,
+    nome_cliente VARCHAR(100), -- Nome do cliente
+    inicio_contrato DATE, -- Início do contrato
+    termino_contrato DATE, -- Data de término do contrato
+    tempo_contrato_meses INT, -- Calculado automaticamente pelo trigger
+    mes_inicio_contrato INT, -- Mês de início do contrato
+    mes_termino_contrato INT, -- Mês de término do contrato
+    classificacao_cliente VARCHAR(3), -- Classificação do cliente 
+    situacao VARCHAR(100), -- Situação (ex: atrasado, adimplente)
+    mensalidade DECIMAL(10,2), -- Valor da mensalidade
+    life_time_value DECIMAL(10,2), -- Valor total do cliente ao longo do contrato
+    cidade VARCHAR(100), -- Cidade do cliente
+    estado VARCHAR(50), -- Estado (UF) do cliente
+    regiao VARCHAR(100), -- Região (Norte, Sul, etc.)
+    dias_em_contrato INT, -- Quantidade de dias que o cliente está em contrato
+    flag VARCHAR(30) -- Flag indicando status especial
+);
+
+
+INSERT INTO clientes (
+    nome_cliente, 
+    inicio_contrato, 
+    termino_contrato, 
+    classificacao_cliente, 
+    situacao, 
+    mensalidade, 
+    life_time_value, 
+    cidade, 
+    estado, 
+    regiao, 
+    flag
+)VALUES
+	('Allow Portaria', '2023-06-28', '2023-01-02', 'B', 'Perdida', 1200.00, 3600.00, 'Londrina', 'Paraná', 'Sul', 'Gray'),
+	('Altatech', '2024-08-28', '2024-12-19', 'S', 'Em Aberto', 2500.00, 15000.00, 'Londrina', 'Paraná', 'Sul', 'White'),
+	('Altos', '2024-04-18', '2024-10-18', 'C', 'Perdida', 3000.00, 18000.00, 'Londrina', 'Paraná', 'Sul', 'Gray'),
+    ('Ana Paula Simões', '2023-09-29', '2024-09-26', 'C', 'Em Aberto', 1000.00, 6000.00, 'Brasília', 'Distrito Federal', 'Centro Oeste', 'Red'),
+    ('Anchieta & Pereira', '2024-06-05', '2024-12-05', 'B', 'Em Aberto', 1500.00, 9000.00, 'Londrina', 'Paraná', 'Sul', 'Yellow'),
+    ('Archibox', '2024-09-20', '2025-06-20', 'B', 'Em Aberto', 2000.00, 16000.00, 'Londrina', 'Paraná', 'Sul', 'White'),
+    ('Ateliê Maries', '2023-11-13', '2024-12-13', 'C', 'Perdida', 1000.00, 10000.00, 'Londrina', 'Paraná', 'Sul', 'Gray'),
+    ('Atomic Motorsport', '2023-07-24', '2024-12-24', 'A', 'Em Aberto', 700.00, 6300.00, 'Londrina', 'Paraná', 'Sul', 'Green'),
+    ('Aurora Imobiliária', '2024-08-18', '2025-05-18', 'A', 'Em Aberto', 2500.00, 20000.00, 'Londrina', 'Paraná', 'Sul', 'White'),
+    ('Bcar', '2024-04-12', '2024-12-10', 'C', 'Perdida', 1000.00, 6000.00, 'Londrina', 'Paraná', 'Sul', 'Gray'),
+    ('Bella Seg', '2023-10-23', '2024-02-23', 'B', 'Perdida', 1000.00, 3000.00, 'Londrina', 'Paraná', 'Sul', 'Gray'),
+    ('Bellibone', '2024-01-25', '2024-03-25', 'B', 'Perdida', 2691.24, 5382.00, 'Maywood', 'Nova Jersey', 'Nordeste', 'Gray'),
+    ('Béni Beleza E Estética', '2024-02-01', null, 'C', 'Perdida', 1300.00, 7800.00, 'Londrina', 'Paraná', 'Sul', 'Gray'),
+    ('Bf Tech', '2023-10-03', '2025-02-04', 'A', 'Em Aberto', 0, 0, 'Chapecó', 'Santa Catarina', 'Sul', 'Yellow'),
+    ('Blackcar', null, null, 'C', 'Perdida', 1000.00, 6000.00, 'Londrina', 'Paraná', 'Sul', 'Gray'),
+    ('Boa Vista', '2024-01-24', '2024-09-24', 'B', 'Em Aberto', 900.00, 9000.00, 'Londrina', 'Paraná', 'Sul', 'Red'),
+    ('Bonfim Solutions', '2024-02-27', '2024-08-27', 'C', 'Perdida', 1500.00, 9000.00, 'Brasília', 'Distrito Federal', 'Centro Oeste', 'Gray'),
+    ('Bonn Produto Saúde', '2024-03-18', '2024-06-18', 'C', 'Perdida', 1300.00, 3900.00, 'Curitiba', 'Paraná', 'Sul', 'Gray'),
+    ('Brainstorm Nutrition', '2024-03-22', '2024-09-22', 'C', 'Perdida', 1000.00, 9000.00, 'Londrina', 'Paraná', 'Sul', 'Gray'),
+    ('Budega Bar', '2023-08-29', '2023-11-29', 'C', 'Perdida', 1500.00, 4500.00, 'Ubá', 'Minas Gerais', 'Sudeste', 'Gray'),
+    ('Campo Ótica', '2024-07-03', '2025-01-03', 'B', 'Em Aberto', 2500.00, 15000.00, 'Campo Mourão', 'Paraná', 'Sul', 'Red'),
+    ('Cássio Lourenço', '2024-03-05', '2024-09-05', 'C', 'Em Aberto', 1000.00, 6000.00, 'Belo Horizonte', 'Minas Gerais', 'Sudeste', 'Yellow'),
+    ('Century 21', '2022-11-29', '2023-06-27', 'A', 'Perdida', 1100.00, 8800.00, 'Londrina', 'Paraná', 'Sul', 'Gray'),
+    ('Cheirin Bão', '2024-04-08', '2025-04-08', 'C', 'Perdida', 1000.00, 12000.00, 'Belo Horizonte', 'Minas Gerais', 'Sudeste', 'Gray'),
+    ('Comex', '2023-11-16', '2024-02-11', 'C', 'Perdida', 900.00, 5400.00, 'Londrina', 'Paraná', 'Sul', 'Gray'),
+    ('Conquista', '2023-12-12', '2024-03-13', 'C', 'Perdida', 0, 0, 'Londrina', 'Paraná', 'Sul', 'Gray'),
+    ('Consultoria Do Sono', '2023-09-22', '2025-01-02', 'B', 'Em Aberto', 800.00, 2400.00, 'Porto Alegre', 'Rio Grande Do Sul', 'Sul', 'Green'),
+    ('Contabme', '2024-05-27', '2024-10-27', 'A', 'Perdida', 3497.00, 20982.00, 'São Paulo', 'São Paulo', 'Sudeste', 'Gray'),
+    ('Conveniencia D Hora', '2023-09-04', '2023-12-04', 'C', 'Perdida', 700.00, 2100.00, 'Timbó', 'Santa Catarina', 'Sul', 'Gray'),
+    ('Creative Saúde', '2024-01-30', '2024-06-30', 'A', 'Perdida', 1500.00, 9000.00, 'Curitiba', 'Paraná', 'Sul', 'Gray'),
+    ('Daiane Lorena', '2024-04-10', '2025-04-10', 'C', 'Em Aberto', 1000.00, 12000.00, 'Brasília', 'Distrito Federal', 'Centro Oeste', 'Yellow'),
+    ('Diplomata', '2023-03-15', '2023-09-15', 'C', 'Perdida', 1500.00, 9000.00, 'Londrina', 'Paraná', 'Sul', 'Gray'),
+    ('Doginarts', '2024-01-29', '2024-06-29', 'A', 'Perdida', 3170.00, 19021.00, 'Los Angeles', 'Califórnia', 'Sul', 'Gray'),
+    ('Dr Paulo Cortez', null, null, 'C', 'Perdida', 1500.00, 4500.00, 'preencher', 'preencher', 'preencher', 'Gray'),
+	('Dgt', '2023-08-24', '2023-09-24', 'C', 'Perdida', 500.00, 500.00, 'Barueri', 'São Paulo', 'Sudeste', 'Gray'),
+	('Easy Redirect', '2024-03-06', '2024-12-03', 'S', 'Em Aberto', 2000.00, 8000.00, 'Londrina', 'Paraná', 'Sul', 'Red'),
+    ('Edu Veículos', '2023-07-07', '2023-11-07', 'B', 'Perdida', 1250.00, 5000.00, 'Londrina', 'Paraná', 'Sul', 'Gray'),
+    ('Eduardo Castro', '2023-02-20', '2023-08-20', 'C', 'Perdida', 1300.00, 7800.00, 'Londrina', 'Paraná', 'Sul', 'Gray'),
+     
+    ('Lucas Sabino','2023-08-17','2023-05-10','C', 'Perdida', 1000.00, 1000.00, 'Londrina', 'Paraná', 'Sul', 'Gray'),
+	('Madeireira Luzitano','2023-06-01','2024-12-21','A','Em Aberto', 1300.00, 7800.00, 'Londrina', 'Paraná', 'Sul', 'Green'),
+	('Martinoli Vidraçaria','2023-07-06','2024-06-01','B','Perdida', 1500.00, 9000.00,'Londrina','Paraná','Sul','Gray'),
+	('Master Sul','2024-09-02','2025-02-03','C','Em Aberto',1500.00,9000.00,'Londrina','Paraná','Sul','White'),
+	('Masterclin','2023-11-01','2024-01-02','C','Perdida',1300.00,3900.00,'Cascavel','Paraná','Sul','Gray'),
+	('Matel Automóveis','2023-11-24','2024-01-10','C','Em Aberto',700.00,2400.00,'Londrina','Paraná','Sul','Red'),
+	('Messias Motors','2023-07-27','2023-11-27','B','Perdida',1200.00,6000.00,'Londrina','Paraná','Sul','Gray'),
+	('Míria Fisioterapia','2024-01-11','2024-11-12','C','Em Aberto',1000.00,12000.00,'Belo Horizonte','Minas Gerais','Sudeste','Green'),
+	('Montari Planejados','2023-09-07','2024-07-03','C','Perdida',800.00,7188.00,'Serrinha','Bahia','Nordeste','Gray'),
+	('Natieli E Veronice','2022-11-01','2024-01-12','C','Em Aberto',700.00,8400.00,'Londrina','Paraná','Sul','Green'),
+	('Nobi','2024-01-08','2024-02-09','B','Perdida',1000.00,3000.00,'Londrina','Paraná','Sul','Gray'),
+	('Onesafety','2023-09-19','2023-12-19','C','Perdida',1000.00,4000.00,'Londrina','Paraná','Sul','Gray'),
+	('Pemaq Metalúrgica','2023-10-05','2023-05-12','C','Perdida',1000.00,3000.00,'Varginha','Minas Gerais','Sudeste','Gray'),
+	('Personalize Clínica','2023-09-18','2024-03-18','B','Perdida',500.00,3000.00,'Santo André','São Paulo','Sudeste','Gray'),
+	('Produtos Pinhal','2024-03-01','2024-01-09','A','Em Aberto',1200.00,7200.00,'Londrina','Paraná','Sul','Yellow'),
+	('Protege','2023-05-05','2023-05-11','B','Perdida',900.00,5400.00,'Londrina','Paraná','Sul','Gray'),
+	('Pura Vida','2024-04-30','2024-06-30','C','Perdida',1000.00,2000.00,'Londrina','Paraná','Sul','Gray'),
+	('R Office','2023-10-27','2024-11-07','B','Perdida',1000.00,3000.00,'Londrina','Paraná','Sul','Gray'),
+	('Rapha Ink','2023-08-17','2023-05-10','C','Perdida',1000.00,1000.00,'Londrina','Paraná','Sul','Gray'),
+	('Reação Piscinas',2023-09-19,2023-10-10,'C','Perdida',300.00,300.00,'Rio de Janeiro','Rio de Janeiro','Sudeste','Gray'),
+	('Recuperar Clinica De Fisioterapia','2023-06-06','2025-06-06','B','Em Aberto',1000.00,12000.00,'Belo Horizonte','Minas Gerais','Sudeste','Green'),
+	('Rede Sia De Informações','2023-10-25','25/04/2024','C','Perdida',1000.00,6000.00,'Vitória','Espírito Santo','Sudeste','Gray'),
+	('Ricchezza','2014-12-07','2025-12-03','S','Em Aberto',2500.00,15000.00,'Londrina','Paraná','Sul','Red'),
+	('Rockfeller','2024-04-15','20241-10-14','C','Perdida',800.00,4800.00,'Londrina','Paraná','Sul','Gray'),
+	('Ruah 295','2023-11-27','2024-07-31','C','Perdida',1000.00,3000.00,'Londrina','Paraná','Sul','Gray'),
+	('Sayomi Yamanaka','2024-04-30','2024-07-30','C','Perdida',1500.00,4500.00,'preencher','preencher','preencher','Gray'),
+	('Som Bassan','2023-07-19','2023-10-19','B','Perdida',1000.00,3000.00,'Londrina','Paraná','Sul','Gray'),
+	('South Motors','2023-04-11','2023-11-10','B','Perdida',1095.26,6571.56,'Curitiba','Paraná','Sul','Gray'),
+	('Stanza','2023-03-13','2024-12-13','A','Perdida',1500.00,15000.00,'Londrina','Paraná','Sul','Gray'),
+	('Sten','2023-04-06','2024-05-08','C','Perdida',800.00,12000.00,'Londrina','Paraná','Sul','Gray'),
+	('Tikdogs','null','null','C','Perdida',1000.00,6000.00,'Londrina','Paraná','Sul','Gray'),
+	('Top Tintas','2023-06-26','2023-12-26','C','Perdida',1500.00,9000.00,'Londrina','Paraná','Sul','Gray'),
+	('Traquitana','2024-04-23','2025-04-24','B','Em Aberto',1000.00,1200.00,'Belo Horizonte','Minas Gerais','Sudeste','Green'),
+	('V8 Multimarcas','2023-07-04','2023-10-10','C','Perdida',1000.00,3000.00,'Curitiba','Paraná','Sul','Gray'),
+	('Vaapty','2024-07-10','2025-10-01','B','Em Aberto',1200.00,7200.00,'Ourinhos','São Paulo','Sudeste','Yellow'),
+	('Vinicius Gobbo','2023-03-15','2023-09-15','C','Perdida',1500.00,4500.00,'Londrina','Paraná','Sul','Gray'),
+	('Vitalina','2024-07-31','2024-10-31','C','Em Aberto',1000.00,3000.00,'Miraí','Minas Gerais','Sudeste','Red'),
+	('Viva Mais','2023-09-19','2023-12-19','C','Perdida',700.00,2100.00,'Curitiba','Paraná','Sul','Gray'),
+	('Vivaldi','2024-07-10','2025-10-01','C','Em Aberto',1300.00,7800.00,'Belo Horizonte','Minas Gerais','Sudeste','Green'),
+	('Vox 2 You','2022-11-22','2023-11-22','A','Perdida',0,0,'Londrina','Paraná','Sul','Gray'),
+	('Web Eletric','2023-08-16','2023-11-16','C','Perdida',1000.00,3000.00,'Londrina','Paraná','Sul','Gray'),
+	('White Casas','2023-02-13','2023-08-13','C','Perdida',800.00,4800.00,'Londrina','Paraná','Sul','Gray'),
+	('Wmotors','2024-01-16','2024-06-14','C','Perdida',800.00,4800.00,'Londrina','Paraná','Sul','Gray'),
+	('Wv Imports','2024-02-24','2025-02-24','C','Perdida',1000.00,12000.00,'Belo Horizonte','Minas Gerais','Sudeste','Gray'),
+	('Yudi Ink','2023-02-08','2024-08-02','C','Perdida',1050.00,12600.00,'Londrina','Paraná','Sul','Gray'),
+	('Zaia Comunicação','2023-09-11','2023-11-12','C','Perdida',500.00,1500.00,'São José Dos Campos','São Paulo','Sudeste','Gray'),
+	('Ztf Advogados ','2023-04-11','2023-05-12','A','Perdida'',2347.00,14082.00,'Londrina','Paraná','Sul','Gray'),
+
+    ('Edvaldo', '2024-07-31', '2024-10-31', 'Clientes Recentes', 'C', 'Em Aberto', 1000.00, 3000.00, 'Londrina', 'Paraná', 'Sul', 'White'),
+    ('Effect Energia Solar', '2023-05-05', '2023-07-05', 'C', 'Perdida', 1500.00, 3000.00, 'Londrina', 'Paraná', 'Sul', 'gray'),
+    ('Emporio das Unhas ', '2023-05-31', '2023-11-26', 'B', 'Perdida', 1497.97, 8987.82, 'Brasília', 'Distrito Federal', 'Centro Oeste', 'gray'),
+    ('Emy Saruwatari', '2024-01-23', '2024-12-23', 'Clientes Recentes', 'C', 'Perdida', 1000.00, 12000.00, 'Dourados', 'Mato Grosso do Sul', 'Centro Oeste', 'gray'),
+    ('Epic Joias', '20204-01-24', '2024-07-24', 'Precisam de atenção', 'A', 'Perdida', 900.00, 5400.00, 'Londrina', 'Paraná', 'Sul', 'gray'),
+    ('Escritório União', '2024-02-06', '2025-06-01', 'Precisam de atenção', 'B', 'Em Aberto', 1500.00, 9000.00, 'Umuaruma', 'Paraná', 'Sul', 'Green'),
+    ('Estilo Móveis', '2023-05-29', '2023-11-29', 'C', 'Perdida', 1500.00, 9000.00, 'Cambé', 'Paraná', 'Sul', 'gray'),
+    ('Fabio Cassiano', '2023-07-12', '2024-07-06', 'Precisam de atenção', 'C', 'Perdida', 1500.00, 9000.00, 'Londrina', 'Paraná', 'Sul', 'gray'),
+    ('Farmácia São Rafael', '2023-10-11', '2024-03-11', 'C', 'Perdida', 1000.00, 6000.00, 'Londrina', 'Paraná', 'Sul', 'gray'),
+    ('Fast Online', '2023-06-26', '2023-09-26', 'B', 'Perdida', 1500.00, 4500.00, 'Londrina', 'Paraná', 'Sul', 'gray'),
+    ('Felicitá', '2024-04-10', '2024-06-28', 'Clientes Recentes', 'C', 'Perdida', 1000.00, 12000.00, 'São Miguel do Oeste', 'Santa Catarina', 'Sul', 'gray'),
+    ('Fenibat', '2024-01-01', '2024-12-01', 'Cliente Recentes', 'A', 'Perdida', 2500.00, 28800.00, 'Londrina', 'Parana', 'Sul', 'gray'),
+    ('Fenix Presentes', '2023-01-30', '2023-07-30', 'C', 'Perdida', 1000.00, 6000.00, 'Londrina', 'Paraná', 'Sul', 'gray'),
+    ('Fer Fitness Center', '2023-10-20', '2025-01-17', 'Precisam de Atenção', 'C', 'Perdida', 900.00, 3750.00, 'Ouro Fino', 'Minas Gerais', 'Sudeste', 'gray'),
+    ('Fernando Honório', '2023-12-12', '2024-03-12', 'Precisam de Atenção', 'C', 'Perdida', 0, 0, 'Londrina', 'Paraná', 'Sul', 'gray'),
+    ('G.A Investimentos', '2023-11-24', '2024-03-01', 'Potencial Cliente Fiel', 'C', 'Perdida', 1000.00, 1000.00, 'Londrina', 'Paraná', 'Sul', 'gray'),
+    ('GEAMB Engenharia', '2023-05-31', '2025-03-08', 'Promissores', 'B', 'Em Aberto', 700.00, 16182.00, 'Brasília', 'Distrito Federal', 'Centro Oeste', 'Green'),
+    ('GH Diamond', '2024-01-24', '2024-07-24', 'Precisam de Atenção', 'A', 'Perdida', 900.00, 5400.00, 'Londrina', 'Paraná', 'Sul', 'gray'),
+    ('GR Advocacia', '2024-02-29', '2025-02-29', 'Clientes Recentes', 'C', 'Perdida', 1300.00, 15600.00, 'Londrina', 'Paraná', 'Sul', 'gray'),
+    ('guilherme Chueire', '2022-12-01', '2024-01-02', 'Hibernando', 'B', 'Perdida', 0, 0, 'Londrina', 'Paraná', 'Sul', 'gray'),
+    ('Hastam Motors', '2023-04-18', '2024-12-01', 'Não Pode Perdê-los', 'A', 'Em Aberto', 0, 0, 'Londrina', 'Paraná', 'Sul', 'Red'),
+    ('Homeney', '2023-07-18', '2025-01-24', 'Campeões', 'S', 'Em Aberto', 2497.99, 44963.82, 'Londrina', 'Paraná', 'Sul', 'Red'),
+    ('Ideal Veiculos', '2023-11-09', '2024-02-09', 'A', 'Perdida', 1750.00, 5250.00, 'Londrina', 'Paraná', 'Sul', 'Gray'),
+    ('Ideia Consultoria', '2024-03-06', '2024-09-06', 'Em Risco', 'C', 'Perdida', 1500.00, 9000.00, 'Londrina', 'Paraná', 'Sul', 'Gray'),
+    ('Ihard', '2024-04-23', '2024-10-23', 'Cliente Recente', 'B', 'Perdida', 1000.00, 8000.00, 'Curitiba', 'Paraná', 'Sul', 'Gray'),
+    ('Inplancare', '2024-02-15', '2024-12-15', 'Não Podemos Perdê-los', 'A', 'Perdida', 0, 0, 'Londrina', 'Paraná', 'Sul', 'Gray'),
+    ('Instituto da Coluna e Movimento', '2023-09-04', '2024-03-04', 'C', 'Perdida', 1000.00, 6000.00, 'Brasília', 'Distrito Federal', 'Centro Oeste', 'Gray'),
+    ('Isaque', '2024-02-09', '2024-03-09', 'Clientes Recentes', 'C', 'Perdida', 1225.00, 1225.00, 'Birmingham', 'Alabama', 'Sudeste', 'Gray'),
+    ('KM8 Cars', '2023-09-07', '2024-03-07', 'C', 'Perdida', 2000.00, 12000.00, 'Santo André', 'São Paulo', 'Sudeste', 'Gray'),
+    ('Lá No Fundo', '2024-04-01', '2024-10-01', 'Clientes Recentes', 'C', 'Perdida', 1500.00, 9000.00, 'Londrina', 'Paraná', 'Sul', 'Gray'),
+    ('Lais Zanutto', '2023-07-06', '2023-10-06', 'C', 'Perdida', 1500.00, 4500.00, 'Ibiporã', 'Paraná', 'Sul', 'Gray'),
+    ('Lima Consultoria', '2024-07-06', '2024-07-06', 'Clientes Recentes', 'B', 'Perdida', 2000.00, 12000.00, 'Apucarana', 'Paraná', 'Sul', 'Gray'),
+    ('Lit Point Joias', '2023-11-07', '2024-02-07', 'Perdido', 'C', 'Perdida', 1200.00, 3600.00, 'Curitiba', 'Paraná', 'Sul', 'Gray'),
+    ('Locadrill', '2023-07-27', '2023-10-27', 'Perdidoa', 'B', 'Perdida', 1497.00, 4491.00, 'Londrina', 'Paraná', 'Sul', 'Gray'),
+    ('Lojão do Bras', '2024-07-25', '2025-01-25', 'Clientes Recentes', 'C', 'Em Aberto', 1500.00, 9000.00, 'Londrina', 'Paraná', 'Sul', 'Green'),
+    ('Lojinha do Ser', '2023-07-10', '2023-10-10', 'B', 'Perdida', 1200.00, 3600.00, 'Londrina', 'Paraná', 'Sul', 'Gray'),
+    ('Londri Fenix', '2024-07-04', '2025-01-04', 'Clientes Recentes', 'B', 'Em Aberto', 2500.00, 15000.00, 'Londrina', 'Paraná', 'Sul', 'Yellow'),
+    ('loophing', '2023-02-20', '2023-08-20', 'C', 'Perdida', 1200.00, 7200.00, 'Londrina', 'Paraná', 'Sul', 'Perdida')
+    ;
+
+
+CREATE TABLE user (
+    id SERIAL PRIMARY KEY,
+    nome VARCHAR(100) NOT NULL,
+    cpf VARCHAR(14) UNIQUE NOT NULL,
+    email VARCHAR(100) UNIQUE NOT NULL,
+    senha VARCHAR(255) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+
+
+INSERT INTO vendas_mensais (
+	empresa_id, mes_ano, quantidade_vendas, valor_total, investimento
+) VALUES 
+(199, '2024-09',0, 63034.84, 9502.47),
+(74, '2024-09', 0, 0.00, 1596.69),
+(99, '2024-09', 0, 7213.05, 6428.14),
+(198, '2024-09', 0, 0.00, 2109.65),
+(52, '2024-09', 0, 9369.50, 2908.47),
+(59, '2024-09', 0, 0.00, 1605.53),
+(141, '2024-09', 2, 3300.00, 1141.94),
+(40, '2024-09', 0, 0.00, 8235.74),
+(42, '2024-09', 0, 3300.00, 802.23),
+(46, '2024-09', 0, 17750.00, 1029.85),
+(60, '2024-09', 0, 0.00, 1595.62),
+(69, '2024-09', 0, 1800.00, 1220.16),
+(109, '2024-09', 0, 0.00, 1688.47),
+(43, '2024-09', 0, 0.00, 899.77),
+(65, '2024-09', 11, 45799.00, 2751.88),
+(194, '2024-09', 1, 21000.00, 1910.79),
+(78, '2024-09', 12, 8297.00, 608.83),
+(84, '2024-09', 0, 0.00, 1710.68),
+(97, '2024-09',28, 20895.85, 2233.78),
+(115, '2024-09', 27, 7105.79, 1497.47),
+(113, '2024-09', 0, 0.00, 1128.41),
+(111, '2024-09', 0, 9000.00, 1698.54),
+(91, '2024-09', 0, 0.00, 449.98),
+(82, '2024-09', 0, 0.00, 1672.44),
+(54,'2024-09', 0, 0.00, 1920.14),
+(183, '2024-09', 0, 0.00, 0.00),
+(139, '2024-09', 0, 0.00, 893.73),
+(124, '2024-09', 0, 0.00, 913.84),
+(80, '2024-09', 0, 0.00, 229.21),
+(44, '2024-09', 0, 0.00, 0.00),
+(47, '2024-09', 0, 0.00, 4188.97),
+(199, '2024-08', 936, 17636.54, 10040.82),
+(74, '2024-08', 0, 0.00, 1206.65),
+(99, '2024-08', 0, 0.00, 6817.09),
+(198, '2024-08',0,0.00,3083.75),
+(52, '2024-08', 24, 4683.46, 1179.25),
+(59, '2024-08', 0, 0.00, 1490.91),
+(141, '2024-08', 0, 0.00, 911.99),
+(40, '2024-08', 0, 0.00, 0.00),
+(42, '2024-08', 0, 6059.32, 1102.36),
+(46, '2024-08', 0, 0, 915.00),
+(60, '2024-08', 5, 6059.32, 1102.36),
+(69, '2024-08', 0, 0.00, 1223.46),
+(109, '2024-08', 0, 50000.00, 1878.50),
+(43, '2024-08', 0, 0.00, 922.66),
+(65, '2024-08', 0, 24000.00, 2653.33),
+(194, '2024-08', 0, 0.00, 1596.29),
+(78, '2024-08', 6, 8250.00, 607.56),
+(84, '2024-08', 0, 0.00,1446.93),
+(87, '2024-08', 0, 0.00, 1983.78),
+(97, '2024-08', 25, 14263.10,2825.83),
+(115, '2024-08', 22, 6596.72, 1601.06),
+(113, '2024-08', 0, 0.00, 0.00),
+(111, '2024-08', 1, 4398.00, 1837.34),
+(91, '2024-08',0, 0.00, 0.00),
+(82, '2024-08', 1, 0.00, 1296.07),
+(54, '2024-08', 2, 11490.00, 1874.47),
+(183, '2024-08', 0, 0.00, 0.00),
+(139, '2024-08', 0, 0.00,456.00),
+(124, '2024-08',0, 0.00, 0.00)
+;

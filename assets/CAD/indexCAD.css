@@ -1,0 +1,118 @@
+* {
+     margin: 0;
+     padding: 0;
+     box-sizing: border-box;
+     font-family: Arial, sans-serif;
+ }
+
+ body {
+     display: flex;
+     justify-content: center;
+     align-items: center;
+     height: 100vh;
+     background-color: #45354A;
+ }
+
+ 
+
+ .container {
+     width: 100%;
+     max-width: 400px;
+     background-color: #804991;
+     padding: 20px;
+     box-shadow: 10px 10px 10px 10px black;
+     border-radius: 8px;
+ }
+
+ h2 {
+     text-align: center;
+     margin-bottom: 20px;
+     color: white;
+ }
+
+ .input-container {
+     margin-bottom: 15px;
+ }
+
+ .input-container input{
+     background-color: #804991;
+     font-weight: bold;
+ }
+
+ .input-container input::placeholder{
+     color: white; 
+}
+
+ label {
+     display: block;
+     margin-bottom: 5px;
+     font-weight: bold;
+     color: white;
+ }
+
+ input {
+     width: 100%;
+     padding: 10px;
+     border: 1px solid #ccc;
+     border-radius: 5px;
+     font-size: 1em;
+     color: white;
+ }
+
+ .error {
+     color: red;
+     font-weight: bold;
+     display: none;
+     font-size: 1em;
+ }
+
+ .btn {
+     width: 100%;
+     padding: 12px;
+     background-color: #a2e627;
+     color: white;
+     border: none;
+     font-weight: bold;
+     border-radius: 5px;
+     font-size: 1.2em;
+     cursor: pointer;
+ }
+
+ .btn:hover {
+     background-color: #a2e627;
+ }
+
+ .btn a{
+     text-decoration: none;
+     color: white;
+ }
+
+ .back-to-login {
+     margin-top: 3%;
+     text-align: center;
+ }
+ 
+ .back-to-login a {
+     color: white;
+     text-decoration: none;
+     font-weight: bold;
+ }
+ 
+ .back-to-login a:hover {
+     text-decoration: underline;
+ }
+
+ .go-to-recSenha {
+     margin-top: 3%;
+     text-align: center;
+ }
+ 
+ .go-to-recSenha a {
+     color: white;
+     text-decoration: none;
+     font-weight: bold;
+ }
+ 
+ .go-to-recSenha a:hover {
+     text-decoration: underline;
+ }
